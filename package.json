@@ -1,5 +1,5 @@
 {
-  "name": "gendiff-cli",
+  "name": "gendiff",
   "version": "0.0.1",
   "description": "show difference of two configuration files",
   "keywords": [

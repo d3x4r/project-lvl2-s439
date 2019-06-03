@@ -4,5 +4,5 @@
 
 [![Build Status](https://travis-ci.org/d3x4r/project-lvl2-s439.svg?branch=master)](https://travis-ci.org/d3x4r/project-lvl2-s439)
 
-## install package
-[![asciicast](https://asciinema.org/a/cVkfVOjhYSFsH8SO2yECgg7wj.svg)](https://asciinema.org/a/cVkfVOjhYSFsH8SO2yECgg7wj)
+## install package and help preview
+[![asciicast](https://asciinema.org/a/QIEltzljWK3UpG6fRb3NYygOc.svg)](https://asciinema.org/a/QIEltzljWK3UpG6fRb3NYygOc)
