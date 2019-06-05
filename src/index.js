@@ -1,5 +1,6 @@
 import fs from 'fs';
 import _ from 'lodash';
+import compare from './utils';
 // import path from 'path';
 
 export default (beforePath, afterPath) => {
@@ -29,7 +30,8 @@ export default (beforePath, afterPath) => {
     }
     return acc;
   }, []);
-  return [...diffsWithoutNewData, ...newKeysInAfterData].join(' ');
+
+  return `{\n${[...diffsWithoutNewData, ...newKeysInAfterData].sort(compare).join('\n')}\n}`;
 };
 
 // fn('/home/dexer/diffs/before.json', '/home/dexer/diffs/after.json');
