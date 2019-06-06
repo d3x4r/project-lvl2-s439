@@ -1,11 +1,10 @@
-import fs from 'fs';
 import _ from 'lodash';
 import compare from './utils';
-// import path from 'path';
+import readData from './read-data';
 
 export default (beforePath, afterPath) => {
-  const beforeData = JSON.parse(fs.readFileSync(beforePath));
-  const afterData = JSON.parse(fs.readFileSync(afterPath));
+  const beforeData = readData(beforePath);
+  const afterData = readData(afterPath);
 
   const diffsWithoutNewData = Object.keys(beforeData).reduce((acc, beforeObjKey) => {
     const objEqualPredicate = beforeData[beforeObjKey] === afterData[beforeObjKey];
