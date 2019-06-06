@@ -10,7 +10,7 @@ export default (beforePath, afterPath) => {
     const objEqualPredicate = beforeData[beforeObjKey] === afterData[beforeObjKey];
 
     if (_.has(afterData, beforeObjKey) && objEqualPredicate) {
-      return [`${beforeObjKey}: ${afterData[beforeObjKey]}`, ...acc];
+      return [`  ${beforeObjKey}: ${afterData[beforeObjKey]}`, ...acc];
     }
 
     if (_.has(afterData, beforeObjKey) && !objEqualPredicate) {
@@ -29,8 +29,7 @@ export default (beforePath, afterPath) => {
     }
     return acc;
   }, []);
-
-  return `{\n${[...diffsWithoutNewData, ...newKeysInAfterData].sort(compare).join('\n')}\n}`;
+  return `{\n  ${[...diffsWithoutNewData, ...newKeysInAfterData].sort(compare).join('\n  ')}\n}`;
 };
 
 // fn('/home/dexer/diffs/before.json', '/home/dexer/diffs/after.json');
