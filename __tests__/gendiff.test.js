@@ -1,16 +1,17 @@
 import fs from 'fs';
 import genDiff from '../src';
 
-const receivedJson = genDiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json');
+const json = genDiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json');
 
-const receivedYaml = genDiff('__tests__/__fixtures__/before.yml', '__tests__/__fixtures__/after.yml');
+const yaml = genDiff('__tests__/__fixtures__/before.yml', '__tests__/__fixtures__/after.yml');
 
-const expected = fs.readFileSync('__tests__/__fixtures__/diff-jsons.txt', 'utf-8');
+const ini = genDiff('__tests__/__fixtures__/before.ini', '__tests__/__fixtures__/after.ini');
 
-test('jsonTest', () => {
-  expect(receivedJson).toBe(expected);
-});
+const result = fs.readFileSync('__tests__/__fixtures__/diff-jsons.txt', 'utf-8');
 
-test('yamlTest', () => {
-  expect(receivedYaml).toBe(expected);
-});
+test.each([[json, result], [yaml, result], [ini, result]])(
+  'diff test %#',
+  (received, expected) => {
+    expect(received).toBe(expected);
+  },
+);
