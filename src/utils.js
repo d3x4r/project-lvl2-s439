@@ -13,4 +13,11 @@ const compare = (first, second) => {
   return 0;
 };
 
-export default compare;
+const objectMissingKeys = (firstObject, secondObject) => {
+  const firstObjectKeys = Object.keys(firstObject);
+  const secondObjectKeys = Object.keys(secondObject);
+
+  return firstObjectKeys.filter(key => (!secondObjectKeys.includes(key)));
+};
+
+export { compare, objectMissingKeys };
