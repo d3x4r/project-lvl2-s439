@@ -5,12 +5,17 @@ const Indents = {
   gap: 2,
 };
 
-const stringify = (obj, indent) => `{\n${Object.keys(obj).map((element) => {
-  if (typeof obj[element] === 'object') {
-    return `${' '.repeat(indent - Indents.gap)}  ${element}: ${stringify(obj[element], indent + Indents.tab)}`;
+const stringify = (obj, indent) => {
+  if (obj instanceof Object) {
+    return `{\n${Object.keys(obj).map((element) => {
+      if (typeof obj[element] === 'object') {
+        return `${' '.repeat(indent - Indents.gap)}  ${element}: ${stringify(obj[element], indent + Indents.tab)}`;
+      }
+      return `${' '.repeat(indent)}${element}: ${obj[element]}`;
+    }).join('\n')}\n${' '.repeat(indent - Indents.tab)}}`;
   }
-  return `${' '.repeat(indent)}${element}: ${obj[element]}`;
-}).join('\n')}\n${' '.repeat(indent - Indents.tab)}}`;
+  return obj;
+};
 
 const renderElement = {
   unchanged: {
@@ -25,6 +30,9 @@ const renderElement = {
   deleted: {
     node: (spacing, elem) => `${' '.repeat(spacing - Indents.gap)}- ${elem.name}: ${stringify(elem.children, spacing + Indents.tab)}`,
     leaf: (spacing, elem) => `${' '.repeat(spacing - Indents.gap)}- ${elem.name}: ${elem.value}`,
+  },
+  changed: {
+    changedElement: (spacing, elem) => `${' '.repeat(spacing - Indents.gap)}+ ${elem.name}: ${stringify(elem.newValue, spacing + Indents.tab)}\n${' '.repeat(spacing - Indents.gap)}- ${elem.name}: ${stringify(elem.oldValue, spacing + Indents.tab)}`,
   },
 };
 

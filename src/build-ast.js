@@ -1,21 +1,35 @@
 import _ from 'lodash';
 import { uniqKeys } from './utils';
 
-class NodeOfAst {
-  constructor(name, status, children) {
+class ElementOfAst {
+  constructor(name, status) {
     this.name = name;
     this.status = status;
+  }
+}
+
+class NodeOfAst extends ElementOfAst {
+  constructor(name, status, children) {
+    super(name, status);
     this.children = children;
     this.type = 'node';
   }
 }
 
-class LeafOfAst {
+class LeafOfAst extends ElementOfAst {
   constructor(name, status, value) {
-    this.name = name;
-    this.status = status;
+    super(name, status);
     this.value = value;
     this.type = 'leaf';
+  }
+}
+
+class ChangedElementOfAst extends ElementOfAst {
+  constructor(name, status, value1, value2) {
+    super(name, status);
+    this.newValue = value1;
+    this.oldValue = value2;
+    this.type = 'changedElement';
   }
 }
 
@@ -38,19 +52,20 @@ const buildAst = (firstData, secondData) => {
 
   return Object.keys(secondData).reduce((acc, secondDataKey) => {
     if (_.has(firstData, secondDataKey) && typeof firstData[secondDataKey] === 'object' && typeof secondData[secondDataKey] === 'object') {
-      return [...acc, new NodeOfAst(secondDataKey, 'unchanged', buildAst(firstData[secondDataKey], secondData[secondDataKey]))];
+      return [...acc, elementOfAst(secondDataKey, 'unchanged', buildAst(firstData[secondDataKey], secondData[secondDataKey]))];
     }
 
     // eslint-disable-next-line max-len
     if (_.has(firstData, secondDataKey) && typeof firstData[secondDataKey] === typeof secondData[secondDataKey]) {
       if (firstData[secondDataKey] === secondData[secondDataKey]) {
-        return [...acc, new LeafOfAst(secondDataKey, 'unchanged', secondData[secondDataKey])];
+        return [...acc, elementOfAst(secondDataKey, 'unchanged', secondData[secondDataKey])];
       }
-      return [...acc, new LeafOfAst(secondDataKey, 'added', secondData[secondDataKey]), new LeafOfAst(secondDataKey, 'deleted', firstData[secondDataKey])];
+
+      return [...acc, new ChangedElementOfAst(secondDataKey, 'changed', secondData[secondDataKey], firstData[secondDataKey])];
     }
 
     if (_.has(firstData, secondDataKey)) {
-      return [...acc, elementOfAst(secondDataKey, 'added', secondData[secondDataKey]), elementOfAst(secondDataKey, 'deleted', firstData[secondDataKey])];
+      return [...acc, new ChangedElementOfAst(secondDataKey, 'changed', secondData[secondDataKey], firstData[secondDataKey])];
     }
 
     return [...acc, elementOfAst(secondDataKey, 'added', secondData[secondDataKey])];
