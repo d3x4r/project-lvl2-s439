@@ -46,9 +46,9 @@ const elementOfAst = (key, status, element) => {
 };
 
 const buildAst = (firstData, secondData) => {
-  const firstObjectUniqKeys = uniqKeys(firstData, secondData);
+  const deletedElementsKeys = uniqKeys(firstData, secondData);
 
-  const firstObjectAstElements = firstObjectUniqKeys.map(key => elementOfAst(key, 'deleted', firstData[key]));
+  const deletedElements = deletedElementsKeys.map(key => elementOfAst(key, 'deleted', firstData[key]));
 
   return Object.keys(secondData).reduce((acc, secondDataKey) => {
     if (_.has(firstData, secondDataKey) && typeof firstData[secondDataKey] === 'object' && typeof secondData[secondDataKey] === 'object') {
@@ -69,7 +69,7 @@ const buildAst = (firstData, secondData) => {
     }
 
     return [...acc, elementOfAst(secondDataKey, 'added', secondData[secondDataKey])];
-  }, firstObjectAstElements);
+  }, deletedElements);
 };
 
 export default buildAst;

@@ -9,6 +9,9 @@ const result = fs.readFileSync('__tests__/__fixtures__/diff-flat.txt', 'utf-8');
 const jsonTree = genDiff('__tests__/__fixtures__/before-tree.json', '__tests__/__fixtures__/after-tree.json');
 const resultTree = fs.readFileSync('__tests__/__fixtures__/diff-tree.txt', 'utf-8');
 
+const plainTree = genDiff('__tests__/__fixtures__/before-tree.json', '__tests__/__fixtures__/after-tree.json', 'plain');
+const resultPlain = fs.readFileSync('__tests__/__fixtures__/diff-plain.txt', 'utf-8');
+
 test.each([[json, result], [yaml, result], [ini, result]])(
   'diff flat %#',
   (received, expected) => {
@@ -16,6 +19,11 @@ test.each([[json, result], [yaml, result], [ini, result]])(
   },
 );
 
+
 test('diff tree', () => {
   expect(jsonTree).toBe(resultTree);
+});
+
+test('plain', () => {
+  expect(plainTree).toBe(resultPlain);
 });
