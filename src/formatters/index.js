@@ -1,9 +1,9 @@
-import renderPlain from './render-plain';
-import renderTree from './render-tree';
-import renderJson from './render-json';
+import formatToPlain from './format-to-plain';
+import formatToTree from './format-to-tree';
+import formatToJson from './format-to-json';
 
 export default {
-  plain: renderPlain,
-  tree: renderTree,
-  json: renderJson,
+  plain: formatToPlain,
+  tree: formatToTree,
+  json: formatToJson,
 };

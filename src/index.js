@@ -1,14 +1,11 @@
 import buildAst from './build-ast';
 import readData from './read-data';
-import render from './formatters';
+import format from './formatters';
 
-export default (beforePath, afterPath, renderType = 'tree') => {
-  const beforeData = readData(beforePath);
-  const afterData = readData(afterPath);
+export default (pathToDataBefore, pathToDataAfter, formatType = 'tree') => {
+  const dataBefore = readData(pathToDataBefore);
+  const dataAfter = readData(pathToDataAfter);
 
-  const ast = buildAst(beforeData, afterData);
-  return render[renderType](ast);
+  const astTree = buildAst(dataBefore, dataAfter);
+  return format[formatType](astTree);
 };
-
-// fn('/home/dexer/diffs/before.json', '/home/dexer/diffs/after.json');
-// fn('../../before.json', '/home/dexer/diffs/after.json');

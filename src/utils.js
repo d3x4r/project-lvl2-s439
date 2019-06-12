@@ -13,11 +13,11 @@ const compare = (first, second) => {
   return 0;
 };
 
-const uniqKeys = (firstObject, secondObject) => {
+const getUniqKeys = (firstObject, secondObject) => {
   const firstObjectKeys = Object.keys(firstObject);
   const secondObjectKeys = Object.keys(secondObject);
 
   return firstObjectKeys.filter(key => (!secondObjectKeys.includes(key)));
 };
 
-export { compare, uniqKeys };
+export { compare, getUniqKeys };

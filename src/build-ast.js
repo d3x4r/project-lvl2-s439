@@ -1,74 +1,76 @@
 import _ from 'lodash';
-import { uniqKeys } from './utils';
+import { getUniqKeys } from './utils';
 
-class ElementOfAst {
-  constructor(name, status) {
-    this.name = name;
-    this.status = status;
+const getDeletedAstElement = (name, element) => {
+  if (typeof element === 'object') {
+    return {
+      name,
+      status: 'deleted',
+      type: 'node',
+      children: element,
+    };
   }
-}
-
-class NodeOfAst extends ElementOfAst {
-  constructor(name, status, children) {
-    super(name, status);
-    this.children = children;
-    this.type = 'node';
-  }
-}
-
-class LeafOfAst extends ElementOfAst {
-  constructor(name, status, value) {
-    super(name, status);
-    this.value = value;
-    this.type = 'leaf';
-  }
-}
-
-class ChangedElementOfAst extends ElementOfAst {
-  constructor(name, status, value1, value2) {
-    super(name, status);
-    this.newValue = value1;
-    this.oldValue = value2;
-    this.type = 'changedElement';
-  }
-}
-
-const typeElementsOfAst = {
-  object: NodeOfAst,
-  string: LeafOfAst,
-  boolean: LeafOfAst,
-  number: LeafOfAst,
+  return {
+    name,
+    status: 'deleted',
+    type: 'leaf',
+    value: element,
+  };
 };
 
-const elementOfAst = (key, status, element) => {
-  const type = typeof element;
-  return new typeElementsOfAst[type](key, status, element);
-};
+const buildAst = (dataBefore, dataAfter) => {
+  const deletedElementsKeys = getUniqKeys(dataBefore, dataAfter);
 
-const buildAst = (firstData, secondData) => {
-  const deletedElementsKeys = uniqKeys(firstData, secondData);
+  const deletedElements = deletedElementsKeys
+    .map(key => getDeletedAstElement(key, dataBefore[key]));
 
-  const deletedElements = deletedElementsKeys.map(key => elementOfAst(key, 'deleted', firstData[key]));
-
-  return Object.keys(secondData).reduce((acc, secondDataKey) => {
-    if (_.has(firstData, secondDataKey) && typeof firstData[secondDataKey] === 'object' && typeof secondData[secondDataKey] === 'object') {
-      return [...acc, elementOfAst(secondDataKey, 'unchanged', buildAst(firstData[secondDataKey], secondData[secondDataKey]))];
-    }
-
-    // eslint-disable-next-line max-len
-    if (_.has(firstData, secondDataKey) && typeof firstData[secondDataKey] === typeof secondData[secondDataKey]) {
-      if (firstData[secondDataKey] === secondData[secondDataKey]) {
-        return [...acc, elementOfAst(secondDataKey, 'unchanged', secondData[secondDataKey])];
+  return Object.keys(dataAfter).reduce((acc, afterDataKey) => {
+    const name = afterDataKey;
+    if (_.has(dataBefore, afterDataKey)) {
+      if (typeof dataBefore[afterDataKey] === 'object' && typeof dataAfter[afterDataKey] === 'object') {
+        return [...acc, {
+          name,
+          status: 'unchanged',
+          children: buildAst(dataBefore[afterDataKey], dataAfter[afterDataKey]),
+          type: 'node',
+        }];
       }
 
-      return [...acc, new ChangedElementOfAst(secondDataKey, 'changed', secondData[secondDataKey], firstData[secondDataKey])];
+      if (typeof dataBefore[afterDataKey] === typeof dataAfter[afterDataKey]) {
+        if (dataBefore[afterDataKey] === dataAfter[afterDataKey]) {
+          return [...acc, {
+            name,
+            status: 'unchanged',
+            value: dataAfter[afterDataKey],
+            type: 'leaf',
+          }];
+        }
+      }
+
+      return [...acc, {
+        name,
+        status: 'changed',
+        newValue: dataAfter[afterDataKey],
+        oldValue: dataBefore[afterDataKey],
+        type: 'changedElement',
+      }];
     }
 
-    if (_.has(firstData, secondDataKey)) {
-      return [...acc, new ChangedElementOfAst(secondDataKey, 'changed', secondData[secondDataKey], firstData[secondDataKey])];
+    if (typeof dataAfter[afterDataKey] === 'object') {
+      return [...acc, {
+        name,
+        status: 'added',
+        type: 'node',
+        children: dataAfter[afterDataKey],
+      }];
     }
 
-    return [...acc, elementOfAst(secondDataKey, 'added', secondData[secondDataKey])];
+    return [...acc, {
+      name,
+      status: 'added',
+      value: dataAfter[afterDataKey],
+      type: 'leaf',
+    }];
   }, deletedElements);
 };
 
