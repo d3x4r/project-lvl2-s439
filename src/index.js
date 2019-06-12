@@ -2,7 +2,7 @@ import buildAst from './build-ast';
 import readData from './read-data';
 import render from './formatters';
 
-export default (beforePath, afterPath, renderType = 'json') => {
+export default (beforePath, afterPath, renderType = 'tree') => {
   const beforeData = readData(beforePath);
   const afterData = readData(afterPath);
 

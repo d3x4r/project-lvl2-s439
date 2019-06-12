@@ -6,7 +6,7 @@ const yaml = genDiff('__tests__/__fixtures__/before.yml', '__tests__/__fixtures_
 const ini = genDiff('__tests__/__fixtures__/before.ini', '__tests__/__fixtures__/after.ini');
 const result = fs.readFileSync('__tests__/__fixtures__/diff-flat.txt', 'utf-8');
 
-const jsonTree = genDiff('__tests__/__fixtures__/before-tree.json', '__tests__/__fixtures__/after-tree.json');
+const tree = genDiff('__tests__/__fixtures__/before-tree.json', '__tests__/__fixtures__/after-tree.json');
 const resultTree = fs.readFileSync('__tests__/__fixtures__/diff-tree.txt', 'utf-8');
 
 const plainTree = genDiff('__tests__/__fixtures__/before-tree.json', '__tests__/__fixtures__/after-tree.json', 'plain');
@@ -21,9 +21,9 @@ test.each([[json, result], [yaml, result], [ini, result]])(
 
 
 test('diff tree', () => {
-  expect(jsonTree).toBe(resultTree);
+  expect(tree).toBe(resultTree);
 });
 
-test('plain', () => {
+test('diff plain', () => {
   expect(plainTree).toBe(resultPlain);
 });
