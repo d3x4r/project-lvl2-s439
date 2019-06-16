@@ -1,1 +1,1 @@
-export default astTree => JSON.stringify(astTree);
+export default JSON.stringify;

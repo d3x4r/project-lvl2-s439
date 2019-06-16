@@ -13,11 +13,5 @@ const compare = (first, second) => {
   return 0;
 };
 
-const getUniqKeys = (firstObject, secondObject) => {
-  const firstObjectKeys = Object.keys(firstObject);
-  const secondObjectKeys = Object.keys(secondObject);
-
-  return firstObjectKeys.filter(key => (!secondObjectKeys.includes(key)));
-};
-
-export { compare, getUniqKeys };
+// eslint-disable-next-line import/prefer-default-export
+export { compare };

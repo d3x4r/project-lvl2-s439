@@ -1,31 +1,31 @@
 import fs from 'fs';
 import genDiff from '../src';
 
-const resultFlatJson = genDiff('__tests__/__fixtures__/before.json', '__tests__/__fixtures__/after.json');
-const resultFlatYaml = genDiff('__tests__/__fixtures__/before.yml', '__tests__/__fixtures__/after.yml');
-const resultFlatIni = genDiff('__tests__/__fixtures__/before.ini', '__tests__/__fixtures__/after.ini');
-const expectedFlat = fs.readFileSync('__tests__/__fixtures__/diff-flat.txt', 'utf-8');
+const pathToFlatDataJsonBefore = '__tests__/__fixtures__/before.json';
+const pathToFlatDataJsonAfter = '__tests__/__fixtures__/after.json';
 
-const tree = genDiff('__tests__/__fixtures__/before-tree.json', '__tests__/__fixtures__/after-tree.json');
-const expectedTree = fs.readFileSync('__tests__/__fixtures__/diff-tree.txt', 'utf-8');
+const pathToFlatDataYamlBefore = '__tests__/__fixtures__/before.yml';
+const pathToFlatDataYamlAfter = '__tests__/__fixtures__/after.yml';
 
-const plain = genDiff('__tests__/__fixtures__/before-tree.json', '__tests__/__fixtures__/after-tree.json', 'plain');
-const expectedPlain = fs.readFileSync('__tests__/__fixtures__/diff-plain.txt', 'utf-8');
+const pathToFlatDataIniBefore = '__tests__/__fixtures__/before.ini';
+const pathToFlatDataIniAfter = '__tests__/__fixtures__/after.ini';
 
-test.each([[resultFlatJson, expectedFlat],
-  [resultFlatYaml, expectedFlat],
-  [resultFlatIni, expectedFlat]])(
+const pathToTreeDataJsonBefore = '__tests__/__fixtures__/before-tree.json';
+const pathToTreeDataJsonAfter = '__tests__/__fixtures__/after-tree.json';
+
+test.each([[genDiff(pathToFlatDataJsonBefore, pathToFlatDataJsonAfter), fs.readFileSync('__tests__/__fixtures__/diff-flat.txt', 'utf-8')],
+  [genDiff(pathToFlatDataYamlBefore, pathToFlatDataYamlAfter), fs.readFileSync('__tests__/__fixtures__/diff-flat.txt', 'utf-8')],
+  [genDiff(pathToFlatDataIniBefore, pathToFlatDataIniAfter), fs.readFileSync('__tests__/__fixtures__/diff-flat.txt', 'utf-8')]])(
   'diff flat %#',
   (received, expected) => {
     expect(received).toBe(expected);
   },
 );
 
-
 test('diff tree', () => {
-  expect(tree).toBe(expectedTree);
+  expect(genDiff(pathToTreeDataJsonBefore, pathToTreeDataJsonAfter)).toBe(fs.readFileSync('__tests__/__fixtures__/diff-tree.txt', 'utf-8'));
 });
 
 test('diff plain', () => {
-  expect(plain).toBe(expectedPlain);
+  expect(genDiff(pathToTreeDataJsonBefore, pathToTreeDataJsonAfter, 'plain')).toBe(fs.readFileSync('__tests__/__fixtures__/diff-plain.txt', 'utf-8'));
 });

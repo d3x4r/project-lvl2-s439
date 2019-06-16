@@ -1,77 +1,35 @@
 import _ from 'lodash';
-import { getUniqKeys } from './utils';
-
-const getDeletedAstElement = (name, element) => {
-  if (typeof element === 'object') {
-    return {
-      name,
-      status: 'deleted',
-      type: 'node',
-      children: element,
-    };
-  }
-  return {
-    name,
-    status: 'deleted',
-    type: 'leaf',
-    value: element,
-  };
-};
 
 const buildAst = (dataBefore, dataAfter) => {
-  const deletedElementsKeys = getUniqKeys(dataBefore, dataAfter);
+  const dataBeforeKeys = Object.keys(dataBefore);
+  const dataAfterKeys = Object.keys(dataAfter);
 
-  const deletedElements = deletedElementsKeys
-    .map(key => getDeletedAstElement(key, dataBefore[key]));
+  const unionDataKeys = _.union(dataBeforeKeys, dataAfterKeys);
 
-  return Object.keys(dataAfter).reduce((acc, afterDataKey) => {
-    const name = afterDataKey;
-    if (_.has(dataBefore, afterDataKey)) {
-      if (typeof dataBefore[afterDataKey] === 'object' && typeof dataAfter[afterDataKey] === 'object') {
-        return [...acc, {
-          name,
-          status: 'unchanged',
-          children: buildAst(dataBefore[afterDataKey], dataAfter[afterDataKey]),
-          type: 'node',
-        }];
-      }
+  return unionDataKeys.map((key) => {
+    const elementOfDataBefore = dataBefore[key];
+    const elementOfDataAfter = dataAfter[key];
 
-      if (typeof dataBefore[afterDataKey] === typeof dataAfter[afterDataKey]) {
-        if (dataBefore[afterDataKey] === dataAfter[afterDataKey]) {
-          return [...acc, {
-            name,
-            status: 'unchanged',
-            value: dataAfter[afterDataKey],
-            type: 'leaf',
-          }];
-        }
-      }
-
-      return [...acc, {
-        name,
-        status: 'changed',
-        newValue: dataAfter[afterDataKey],
-        oldValue: dataBefore[afterDataKey],
-        type: 'changedElement',
-      }];
+    if (_.isObject(elementOfDataBefore) && _.isObject(elementOfDataAfter)) {
+      return { name: key, type: 'node', children: buildAst(elementOfDataBefore, elementOfDataAfter) };
     }
 
-    if (typeof dataAfter[afterDataKey] === 'object') {
-      return [...acc, {
-        name,
-        status: 'added',
-        type: 'node',
-        children: dataAfter[afterDataKey],
-      }];
+    if (elementOfDataBefore === elementOfDataAfter) {
+      return { name: key, type: 'unchanged', value: elementOfDataAfter };
     }
 
-    return [...acc, {
-      name,
-      status: 'added',
-      value: dataAfter[afterDataKey],
-      type: 'leaf',
-    }];
-  }, deletedElements);
+    if (!_.isUndefined(elementOfDataBefore) && !_.isUndefined(elementOfDataAfter)) {
+      return {
+        name: key, type: 'changed', oldValue: elementOfDataBefore, newValue: elementOfDataAfter,
+      };
+    }
+
+    if (!_.isUndefined(elementOfDataAfter)) {
+      return { name: key, type: 'added', value: elementOfDataAfter };
+    }
+
+    return { name: key, type: 'deleted', value: elementOfDataBefore };
+  });
 };
 
 export default buildAst;
