@@ -6,8 +6,8 @@ import parsers from './parsers';
 
 const readData = (filePath) => {
   const data = fs.readFileSync(filePath, 'utf-8');
-  const extension = path.extname(filePath).slice(1);
-  return parsers(data, extension);
+  const dataType = path.extname(filePath).slice(1);
+  return parsers(data, dataType);
 };
 
 export default (pathToDataBefore, pathToDataAfter, formatType = 'tree') => {
