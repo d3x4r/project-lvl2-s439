@@ -9,9 +9,13 @@ const formatElement = {
   changed: (astElement, parentsName) => `Property '${parentsName}${astElement.name}' was updated. From ${normalizeValue(astElement.oldValue)} to ${normalizeValue(astElement.newValue)}`,
 };
 
-const formatToPlain = (astTree, parentsName = '') => `${astTree
-  .filter(astElement => astElement.type !== 'unchanged')
-  .map(astElement => formatElement[astElement.type](astElement, parentsName, formatToPlain))
-  .sort(compare).join('\n')}`;
+const formatToPlain = (astTree, parentsName = '') => {
+  const stringsFromAst = astTree
+    .filter(astElement => astElement.type !== 'unchanged')
+    .map(astElement => formatElement[astElement.type](astElement, parentsName, formatToPlain))
+    .sort(compare)
+    .join('\n');
+  return `${stringsFromAst}`;
+};
 
 export default formatToPlain;

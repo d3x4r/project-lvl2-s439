@@ -11,8 +11,11 @@ const stringify = (elementOfAst, indent = 0) => {
     return elementOfAst;
   }
   const keysOfAstValues = Object.keys(elementOfAst);
-  return `{\n${keysOfAstValues.map(keyOfAstValue => `${' '.repeat(indent - indents.gap)}  ${keyOfAstValue}: ${stringify(elementOfAst[keyOfAstValue], indent + indents.tab)}`)
-    .join('\n')}\n${' '.repeat(indent - indents.tab)}}`;
+  const stringFromAstElement = keysOfAstValues
+    .map(keyOfAstValue => `${' '.repeat(indent - indents.gap)}  ${keyOfAstValue}: ${stringify(elementOfAst[keyOfAstValue], indent + indents.tab)}`)
+    .join('\n');
+
+  return `{\n${stringFromAstElement}\n${' '.repeat(indent - indents.tab)}}`;
 };
 
 const formatElement = {
@@ -23,9 +26,13 @@ const formatElement = {
   changed: (spacing, element) => [`${' '.repeat(spacing - indents.gap)}+ ${element.name}: ${stringify(element.newValue, spacing + indents.tab)}`, `${' '.repeat(spacing - indents.gap)}- ${element.name}: ${stringify(element.oldValue, spacing + indents.tab)}`],
 };
 
-const formatToTree = (astTree, indent = indents.tab) => `{\n${_.flatten(astTree
-  .map(element => formatElement[element.type](indent, element, formatToTree))
-  .sort(compare))
-  .join('\n')}\n${' '.repeat(indent - indents.tab)}}`;
+const formatToTree = (astTree, indent = indents.tab) => {
+  const stringFromTree = astTree
+    .map(element => formatElement[element.type](indent, element, formatToTree))
+    .sort(compare);
+  const flatResult = _.flatten(stringFromTree).join('\n');
+
+  return `{\n${flatResult}\n${' '.repeat(indent - indents.tab)}}`;
+};
 
 export default formatToTree;
